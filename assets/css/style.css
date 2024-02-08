@@ -13,3 +13,8 @@ i
     overflow-y: auto;
     
 }
+
+.bd-mode-toggle
+{
+    z-index: 10 !important;
+}
