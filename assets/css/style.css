@@ -1,0 +1,15 @@
+h1
+{
+    color: red !important;
+font-weight: bold !important;
+}
+
+i 
+{
+    font-size: 1.2rem !important;
+}
+.card-body {
+    height: 700px;
+    overflow-y: auto;
+    
+}
