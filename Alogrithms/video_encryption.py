@@ -30,7 +30,7 @@ def file(path: str):
         raise ValueError("Path doesn't exist")
     return path
 
-@njit
+
 def convert_to_h265(input_file, output_file):
     (
         ffmpeg
@@ -39,8 +39,14 @@ def convert_to_h265(input_file, output_file):
         .run()
     )
 
+def convert_to_vp9(input_file, output_file):
+    (
+        ffmpeg
+        .input(input_file)
+        .output(output_file, vcodec='libvpx-vp9', preset='ultrafast')
+        .run(overwrite_output=True)
+    )
 
-@njit
 def convert_to_ffv1(input_file, output_file):
     (
         ffmpeg

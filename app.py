@@ -151,14 +151,14 @@ def videoEncrypt():
         
         if video_choose == '1':
             destmkv =  "ComputerSecurity/static/assets/video/encrypted_video.mkv"
-            destmp4 =  "ComputerSecurity/static/assets/video/encrypted_video.mp4"
+            destwebm =  "ComputerSecurity/static/assets/video/encrypted_video.webm"
             
             cap = cv.VideoCapture(file_path)
             fps = int(cap.get(cv.CAP_PROP_FPS))
             width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
             height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
 
-            encrypted_video = cv.VideoWriter(dest, cv.VideoWriter.fourcc(*"FFV1"), fps, (width, height), True)
+            encrypted_video = cv.VideoWriter(destmkv, cv.VideoWriter.fourcc(*"FFV1"), fps, (width, height), True)
             # for_encrypted_video = cv.VideoWriter("ComputerSecurity/static/assets/video/for_decrypted_video.mkv", cv.VideoWriter.fourcc(*"ffv1"), fps, (width, height), True)
 
             last = y1
@@ -184,20 +184,20 @@ def videoEncrypt():
             cap.release()
             encrypted_video.release()
             
-            Video.convert_to_h265(destmkv, destmp4)
+            Video.convert_to_vp9(destmkv, destwebm)
             
         elif video_choose == '2':
             destmkv =  "ComputerSecurity/static/assets/video/decrypted_video.mkv"
-            destmp4 =  "ComputerSecurity/static/assets/video/decrypted_video.mp4"
+            destwebm =  "ComputerSecurity/static/assets/video/decrypted_video.webm"
             
-            dest1 = "ComputerSecurity/static/assets/video/decrypted_video.mp4"
+            # dest1 = "ComputerSecurity/static/assets/video/decrypted_video.mp4"
 
             cap = cv.VideoCapture(file_path)
             fps = int(cap.get(cv.CAP_PROP_FPS))
             width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
             height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
 
-            decrypted_video = cv.VideoWriter(dest1, cv.VideoWriter.fourcc(*"ffv1"), fps, (width, height), True)
+            decrypted_video = cv.VideoWriter(destmkv, cv.VideoWriter.fourcc(*"ffv1"), fps, (width, height), True)
             
             last = y1
             second_last = y2
@@ -220,7 +220,7 @@ def videoEncrypt():
             cap.release()
             decrypted_video.release()
             
-            Video.convert_to_h265(destmkv, destmp4)
+            Video.convert_to_vp9(destmkv, destwebm)
             
         data = {
             "en_or_de": video_choose
