@@ -1,5 +1,5 @@
 import math
-
+from pydub import AudioSegment
 # Key generation algorithms for Chaos Encryption Algorithms
 def KeyGeneration(key, c1_value, c2_value, y1_value, y2_value):
     listOfKey = []
@@ -52,3 +52,8 @@ def decryption(audio_data, c1prime, c2prime, y1, y2):
             decrypted_audio_data_list.append(((tempvalue+1) % 2) - 1)
     return decrypted_audio_data_list
 
+from pydub import AudioSegment
+
+def convert_m4a_to_wav(input_file_path, output_file_path):
+    audio = AudioSegment.from_file(input_file_path, format="m4a")
+    audio.export(output_file_path, format="wav")

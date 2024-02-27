@@ -8,7 +8,7 @@ import cv2 as cv
 import numpy as np
 import Alogrithms.video_encryption as Video
 import ffmpeg 
-
+from pydub import AudioSegment
 # import Alogrithms.AlgorithmsImage as ig
 
 app = Flask(__name__)
@@ -110,10 +110,16 @@ def audioEncrypt():
     if request.method == "POST":
         audio = request.files['audio']
         audio_choose = request.form['en_or_de']
-        audio.save('ComputerSecurity/static/assets/audio/' + audio.filename)
+        audio_path = 'ComputerSecurity/static/assets/audio/' + audio.filename
+        audio.save(audio_path)
+        if not audio.filename.endswith('.wav'):
+            # Convert the audio file to .wav format
+            audio = AudioSegment.from_file(audio_path)
+            audio_path = audio_path.rsplit('.', 1)[0] + '.wav'
+            audio.export(audio_path, format='wav')
         c1prime, c2prime= ad.KeyGeneration(key, c1, c2, y1, y2)
         
-        data, samplerate = sf.read('ComputerSecurity/static/assets/audio/' + audio.filename)
+        data, samplerate = sf.read(audio_path)  # Use audio_path here
         
         if audio_choose == '1':
             new_data = ad.encryption(data, c1prime, c2prime, y1, y2)
