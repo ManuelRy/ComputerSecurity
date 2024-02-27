@@ -1,3 +1,4 @@
+import subprocess
 from flask import Flask, url_for, redirect, render_template, request, jsonify
 from PIL import Image
 import soundfile as sf
@@ -148,34 +149,36 @@ def videoEncrypt():
     if request.method == "POST":
         video = request.files['video']
         video_choose = request.form['en_or_de']
-        video.save('ComputerSecurity/static/assets/video/' + video.filename)
+        video_path = 'ComputerSecurity/static/assets/video/' + video.filename
+        video.save(video_path)
+        
+        # Check if the video file is in .mp4 format
+        if video.filename.endswith('.mp4'):
+            # Convert the video file to .mkv format with ffv1 codec
+            output_path = video_path.rsplit('.', 1)[0] + '.mkv'
+            subprocess.run(['ffmpeg', '-y', '-i', video_path, '-c:v', 'ffv1', output_path])
+            video_path = output_path
+
+
         c1prime, c2prime= Video.KeyGeneration(key, c1, c2, y1, y2)
-        
-        file_path = "ComputerSecurity/static/assets/video/" + video.filename        
-        
-        dest =  "ComputerSecurity/static/assets/video/encrypted_video.mp4"
-        
+             
         if video_choose == '1':
+            # Destinations for the encrypted video
             destmkv =  "ComputerSecurity/static/assets/video/encrypted_video.mkv"
             destwebm =  "ComputerSecurity/static/assets/video/encrypted_video.webm"
-            
-            cap = cv.VideoCapture(file_path)
+            cap = cv.VideoCapture(video_path)
             fps = int(cap.get(cv.CAP_PROP_FPS))
             width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
             height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
-
+            # create an empty video file
             encrypted_video = cv.VideoWriter(destmkv, cv.VideoWriter.fourcc(*"FFV1"), fps, (width, height), True)
-            # for_encrypted_video = cv.VideoWriter("ComputerSecurity/static/assets/video/for_decrypted_video.mkv", cv.VideoWriter.fourcc(*"ffv1"), fps, (width, height), True)
-
             last = y1
             second_last = y2
-
             count = 0
-            
+            # Encrypt the video by reading each frame and encrypting it
             while cap.isOpened():
-                ret, frame = cap.read()
-
-                if not ret:
+                haveFrame, frame = cap.read()
+                if not haveFrame:
                     break
                 if count == 0:
                     tmp_frame = np.zeros(frame.shape, dtype=np.uint8)
@@ -189,20 +192,19 @@ def videoEncrypt():
 
             cap.release()
             encrypted_video.release()
-            
+            # convert the encrypted video to webm format to diplay it in the browser
             Video.convert_to_vp9(destmkv, destwebm)
             
         elif video_choose == '2':
+            # destination of the decrypted video
             destmkv =  "ComputerSecurity/static/assets/video/decrypted_video.mkv"
             destwebm =  "ComputerSecurity/static/assets/video/decrypted_video.webm"
             
-            # dest1 = "ComputerSecurity/static/assets/video/decrypted_video.mp4"
-
-            cap = cv.VideoCapture(file_path)
+            cap = cv.VideoCapture(video_path)
             fps = int(cap.get(cv.CAP_PROP_FPS))
             width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
             height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
-
+            # create an empty video file
             decrypted_video = cv.VideoWriter(destmkv, cv.VideoWriter.fourcc(*"ffv1"), fps, (width, height), True)
             
             last = y1

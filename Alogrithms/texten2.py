@@ -5,10 +5,10 @@ def f(x: float) -> float:
     return ((x + 1) % 2) - 1
 
 def normalizeASCII(x: float) -> float:
-    return (x - 127.5) / 127.5
+    return (x - 128) / 128
 
 def denormalizeASCII(x: float) -> float:
-    return (x * 127.5) + 127.5
+    return (x * 128) + 128
 
 def KeyGeneration(length16key, c1, c2, y1, y2):
     listOfKey = []
@@ -41,7 +41,7 @@ def encrypt_char(plain_char: str, c1: float, c2: float, y_minus_1: float, y_minu
             # print("Int of denormalized: ", int(denormalized))
             tmp_cipher_text = chr(int(denormalized))
             decrypted_character, tmp_decrypt_last, tmp_decrypt_second_last = decrypted_char(tmp_cipher_text, c1, c2, decrypt_last, decrypt_second_last)
-            denormalized += ord(plain_char) - ord(decrypted_character)
+            denormalized = (denormalized + ord(plain_char) - ord(decrypted_character)) % 256
             # print(c, decrypted_char)
             if ord(plain_char) - ord(decrypted_character) == 0:
                 break
